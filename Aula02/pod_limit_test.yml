@@ -10,3 +10,5 @@ spec:
     resources:
       requests:
         cpu: "3"
+    tty: true
+    stdin: true
