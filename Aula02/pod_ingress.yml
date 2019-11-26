@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ingress-pod
+  labels:
+    app: app-ingress
+spec:
+  containers:
+    - name: app-ingress
+      image: hashicorp/http-echo
+      args:
+        - "-text=Kubernetes_Ingress"
+        - "-listen=:80"
+      ports:
+      - containerPort: 80

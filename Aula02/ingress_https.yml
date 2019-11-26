@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  tls:
+  - hosts:
+    - dock.200-100-50-10.nip.io
+    - dock.200-100-50-20.nip.io
+    secretName: certificado
+  rules:
+  - host: dock.200-100-50-20.nip.io
+    http:
+     paths:
+     - path: /
+       backend:
+         serviceName: service-ingress
+         servicePort: 80
+  - host: dock.200-100-50-10.nip.io
+    http:
+     paths:
+     - path: /
+       backend:
+         serviceName: service-ingress
+         servicePort: 80
