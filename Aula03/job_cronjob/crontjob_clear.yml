@@ -1,0 +1,31 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cronjob-clear-system
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+     template:
+       metadata:
+         name: cronjob-pod
+         labels:
+           is-cron: "true"
+       spec:
+         volumes:
+         - name: docker-sock
+           hostPath:
+             path: /var/run/docker.sock
+             type: Socket
+         containers:
+         - name: clear-container-cron
+           image: hectorvido/docker-cli
+           volumeMounts:
+           - name: docker-sock
+             mountPath: /var/run/docker.sock
+           command:
+           - "docker"
+           - "system"
+           - "prune"
+           - "-f"
+         restartPolicy: OnFailure

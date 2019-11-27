@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clear-system
+spec:
+  template:
+    metadata:
+      name: clear-pod
+    spec:
+      volumes:
+      - name: docker-sock
+        hostPath:
+          path: /var/run/docker.sock
+          type: Socket
+      containers:
+      - name: clear-container
+        image: hectorvido/docker-cli
+        volumeMounts:
+        - name: docker-sock
+          mountPath: /var/run/docker.sock
+        command:
+        - "docker"
+        - "system"
+        - "prune"
+        - "-f"
+      restartPolicy: Never
