@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-hostpath
+spec:
+  nodeName: node2
+  containers:
+  - image: nginx:alpine
+    name: nginx-vol2
+    volumeMounts:
+    - mountPath: /backup
+      name: backup-volume
+  volumes:
+  - name: backup-volume
+    hostPath:
+      path: /vagrant/
+      type: Directory
