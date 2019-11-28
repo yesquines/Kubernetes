@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-storageclass
+spec:
+  containers:
+  - image: alpine
+    name: alpine
+    tty: true
+    stdin: true
+    volumeMounts:
+    - name: cached-data
+      mountPath: /var/cached-data
+  volumes:
+  - name: cached-data
+    persistentVolumeClaim:
+      claimName: sc-pvc
