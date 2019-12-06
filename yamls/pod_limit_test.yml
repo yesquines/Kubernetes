@@ -9,6 +9,6 @@ spec:
     image: alpine
     resources:
       requests:
-        cpu: "3"
+        cpu: 200m
     tty: true
     stdin: true

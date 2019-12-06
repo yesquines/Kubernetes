@@ -38,11 +38,10 @@ spec:
               name: mysql-secrets
               key: mysql-password
         volumeMounts:
-        - name: mysql-db
-          mountPath: /docker-entrypoint-initdb.d/
         - name: config-volume
           mountPath: /etc/mysql/conf.d
       volumes:
       - name: config-volume
         configMap:
           name: mysql-config
+

@@ -1,12 +1,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: clear-system
+  name: clear-system-2
 spec:
   template:
     metadata:
-      name: clear-pod
+      name: clear-pod-2
     spec:
+      nodeName: node2
       volumes:
       - name: docker-sock
         hostPath:
