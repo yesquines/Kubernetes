@@ -126,10 +126,10 @@ Com isso, podemos fazer pequenas avaliações para os principias objetos:
   kubectl get deploy -o wide
   ```
   Por fim, é possivel também fazer a verificação dos objetos de todos os namespaces, como no exemplo abaixo:
-```bash
-kubectl get pods -A
-kubectl get deploy --all-namespaces
-```
+  ```bash
+  kubectl get pods -A
+  kubectl get deploy --all-namespaces
+  ```
 
 Criando Objetos no Kubernetes
 -----------------------------
@@ -144,7 +144,7 @@ Isso é uma boa prática para entender seu funcionamento, além de, em alguns mo
 Com isso, para que a gente possa criar um Pod é necessário executar o seguinte comando:
 
 ```bash
-kubectl run nginx --generator=run-pod/v1 --image=nginx:alpine
+kubectl run nginx --generator=run-pod/v1 --image nginx:alpine
 ```
 
 Com o POD criado podemos executar comandos para validar o container criado e suas informações.
@@ -226,7 +226,9 @@ O Deploymente é o objeto de alto nível e também pode ser criado via _command 
   ```
 
 **SERVICE**
+
 Após realizar o _Deployment_ devemos começar a pensar em como vamos realizar o acesso da aplicação. Nesse momento é válido entender em qual estágio a aplicação está: Produção, Testes, Homologação, etc.
+
 Já que para cada um dessas fases podem ser acessadas de maneiras diferentes dependendo da estrátégia da empresa.
 
 Os tipos de Services que podemos usar são os seguintes:
@@ -244,9 +246,9 @@ Neste primeiro momento, assim como os outros objetos, vamos realizar as configur
 * Criando Service para o Deploy
   Vamos utilizar o Deploy anterior para expor sua porta e podermos acessar a aplicação de dentro do cluster.
   ```bash
-  kubectl expose deploy NAME_DEPLOY
+  kubectl expose deploy NAME_DEPLOY --port 80
   ```
-  Neste caso, por padrão o service será criado com o tipo _ClusterIP_
+  Neste caso, por padrão o service será criado com o tipo _ClusterIP_ e a porta 80 será exposta.
 * Visualizando Service
   ```bash
   kubectl get services
@@ -265,13 +267,13 @@ Dessa forma fazemos o acesso apenas de dentro do Cluster. Para que seja possivel
   ```
 * Alterando Tipo do Service
   ```bash
-  kubectl expose deploy NAME_DEPLOY --type NodePort
+  kubectl expose deploy NAME_DEPLOY --port 80 --type NodePort
   ```
 * Verificando Service Criado com NodePort
   ```bash
   kubectl get svc
   ```
-> Após configurar o Service como NodePort é liberada uma **porta maior que 30000**
+> Após configurar o Service como NodePort é liberada, para acesso, uma **porta maior que 30000** que será redirecionada para a porta 80 do container no POD.
 
 Com o Service criado agora podemos acessar a aplicação pelo IP da máquina virtual. Para isso temos que saber qual o IP utilizado pelo Minikube
 * Pegando IP do Minikube
