@@ -131,7 +131,7 @@ Com isso, podemos fazer pequenas avaliações para os principias objetos:
   kubectl get deploy --all-namespaces
   ```
 
-Criando Objetos no Kubernetes
+Criando Objetos no Kubernetes - CommandLine
 -----------------------------
 De forma geral, quase todos os objetos no Kubernetes podem ser criados via linha de comando ou via arquivo YAML.
 
@@ -286,4 +286,209 @@ Com o Service criado agora podemos acessar a aplicação pelo IP da máquina vir
   curl 192.168.99.100:31000
   ```
   Sendo assim, agora é possivel realizar o acesso via qualquer Browser.
+
+Criando Objetos no Kubernetes - YAML
+-------------------------------------
+
+A forma mais comum de criar objetos no Kubernetes é utilizando arquivos YAMLs.
+O YAML está se tornando cada vez mais popular e sendo usado para inúmeras formas de serializar informação com o objetivo de ser amigavel ~~(objetivo nem sempre alcançado)~~
+
+Em suma a maioria dos Objetos tem os seguintes campos como obrigatórios:
+* **apiVersion**: Versão do Kubernetes API para criar os objetos
+* **kind**: Tipo do Objetivo (Pod, Service, Deployment, etc.)
+* **metadata**: Informações para identificar o objeto no ambiente Kubernetes (nome, namespace, etc.)
+* **spec**: Quais as especificações desejadas para o objeto. Em outras palavras o estado de criação do seu objeto.
+
+Com isso, nesse primeiro momento, vamos entender a utilização do YAML replicando a criação dos Objetos que criamos apenas via _command line_
+
+### Criando POD com YAML
+
+Vamos criar o arquivo pod-web.yml com o seguinte conteúdo:
+```yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-web
+spec:
+  containers:
+  - name: apache
+    image: httpd:alpine
+    ports:
+    - containerPort: 80
+```
+
+Neste caso além dos campos obrigatórios temos as especificações dos containers que serão criados no POD.
+* **containers**: Flag de inicialização da lista de configurações dos containers.
+  - **name**: Configuração do nome do container.
+  - **image**: Imagem que será utilizada para criar o container.
+  - **ports**: Lista de portas para expor no container.
+  - **containerPort**: Porta que o container irá expor.
+
+Após a criação do arquivos, podemos implementar o POD da seguinte maneira:
+```bash
+kubectl create -f pod-web.yml
+```
+
+### Criando DEPLOYMENT com YAML
+
+Agora que já entendemos como funciona a criação de um YAML para gerenciar objetos no Kubernetes, podemos criar um Deployment. É percepitivel que o conteúdo seguinte arquivo (deploy-nginx.yml), contém um grau de complexidade maior em relação ao POD. Sendo assim, vamos cria-lo:
+```yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-nginx
+  labels:
+    objeto: deploy-nginx
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pod-nginx
+  template:
+    metadata:
+      labels:
+        app: pod-nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+```
+Antes de entendermos cada campo é necessário ter o entendimento sobre **Labels** e **Selectors**
+
+* **_Labels_**:
+  - São conjuntos de chave x valor para agrupar objetos no kubernetes utilizados, geralmente, na organização e chamadas dos objetos.
+  - É possivel adicionar Label via command line da seguinte forma:
+    ```bash
+    kubectl label objetc NAME key=value
+    kubectl label pod pod-web server=web
+    ```
+    As labels de cada objeto podem ser visualizada com a flag **--show-labels**, conforme o exemplo abaixo:
+    ```bash
+    kubectl get pod --show-labels
+    ```
+* **_Selector_**:
+  - Utilizado para Selecionar Objetos baseados em Labels, ou seja, funciona como um filtro que permite associar e organizar objetos que tenham um Label especifica.
+
+Sendo assim, é possivel observar com mais clareza cada campo do Deployment:
+* **labels**: Inicia a informação de metadata para criar uma label para o objeto.
+  - **objeto: deploy-nginx**: Label para identificar o Deployment.
+* **replicas**: Quantidade de PODs que serão criados a partir de um template.
+* **selector**: Cria um metodo de selação para associar objetos ao Deployment
+  - **matchLabels**: Definir que os seletores irão utilizar Labels.
+    - **app: pod-nginx**: Label que identifica os PODs que serão manipulados pelo Deploy e pelo ReplicaSet.
+* **template**: Inicialização as configurações de um template de criação de Pods
+  - **metadata**: Informações dos PODS criados a partir do template
+    - **labels**: Inicia a informação de metadata para criar uma label para o objeto (Nesse caso do POD)
+      - **app: pod-nginx**: Label definida para identificar os PODS.
+* **spec**: Inicia a definição de especificações para criação do POD
+  - **containers**: Inicia as configurações para criação do containers
+
+Criando o Deploy via Arquivo:
+```bash
+kubectl create -f deploy-nginx.yml
+```
+
+### Criando SERVICE com YAML
+
+Definida a criação de Deployment, podemos agora gerar um arquivo (service-nginx.yml) de Service.
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-nginx
+spec:
+  selector:
+    app: pod-nginx
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+```
+Criando o Service via Arquivo:
+```bash
+kubectl create -f service-nginx.yml
+```
+
+Faça os teste de acesso pelo ClusterIP
+```bash
+kubectl get svc
+minikube ssh curl CLUSTER_IP
+```
+Depois vamos editar o service para utilizar NodePort:
+```bash
+kubectl edit service service-nginx
+```
+Mudaremos o tipo de Service e adicionaremos uma nova opçao abaixo de _targertPort_ conforme abaixo:
+```yml
+type: NodePort #Alteração do Tipo de Service
+ports:
+- port: 80
+  targetPort: 80
+  nodePort: 32000 #Inclusão de uma porta especifica para o Node Port
+```
+Assim, podemos testar o acesso na 32000:
+```bash
+minikube ip
+curl MINIKUBE_IP:32000
+```
+
+INGRESS
+-------
+Mesmo com um service criado, ainda não conseguimos utiliza-lo para que um cliente faça o acesso em uma porta comum como, por exemplo, a porta 80.
+Para resolver esse problema é nessário a configuração de um Ingress.
+
+O Ingress trabalha com um Fluxo do qual ele ficará na frente do ambiente Kubernetes recebendo as requisiçoes e encaminhando para o Serviço distribuir entre os PODS. Conforme a imagem abaixo:
+
+![teste](../images/nginx-Ingress.png)
+
+Para criar um Ingress é necessário a instalação de um Ingress Controller.
+Como estamos utilizando o Minikube, só precisamos habilita-lo com o seguinte comando:
+```bash
+minikube addons enable ingress
+```
+Após isso podemos chegar que foi criado um POD no namespace kube-system do NGINX-Ingress:
+```bash
+kubectl get pod -n kube-system
+```
+
+Com o Pod criado é possivel fazer a criação de um ingress para podermos associar a aplicação na porta 80 e com um dominio de acesso.
+Para isso criamos o arquivo ingress.yml:
+
+```yml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress
+spec:
+  rules:
+  - host: kube.192-168-99-100.nip.io
+    http:
+     paths:
+     - path: /
+       backend:
+         serviceName: service-nginx
+         servicePort: 80
+```
+Em suma os campos necessários para a criação do Ingress são os seguintes:
+* **rules**: Inicialização da definição das regras para acesso via o ingress.
+  - **host**: Dominio de acesso
+  - **http**: Inicializa a definição do caminho para a aplicação e associação a um service.
+    - **paths**: Lista de Caminhos mapeados da aplicação
+      - **path**: caminho para acesso a aplicação (Ex: /, /admin, /contato)
+      - **backend**: Definição do Serviço associado ao ingress.
+        - **serviceName**: Nome do Service
+        - **servicePort**: Porta definida no service.
+
+Criando o Ingress:
+```bash
+kubectl create -f ingress.yml
+```
+Com isso podemos testar acessando o dominio adicionado no ingress:
+```bash
+curl kube.192-168-99-100.nip.io
+```
+Ou Acessar plelo Browser: `http://kube.192-168-99-100.nip.io`
+
 ---
