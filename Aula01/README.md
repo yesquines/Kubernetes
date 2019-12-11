@@ -600,4 +600,45 @@ Lembrando, geralmente no projeto (DockerHub ou GitHub) da Imagem utilizada como 
 Dentro do arquivo a novidade é o **env** que está dentro do template para criação do POD.
 Nesse caso foi necessário apenas informar o nome do Environments com a opção **name** e o seu valor com a opção **value**
 
+Init Containers
+---------------
+Podemos utilizar containers temporarios dentro do POD para executar uma determinada tarefa, do qual é chamado de InitContainers
+
+No caso, o InitContainers são um configuração dentro de um POD. Que pode ser exemplificado com o arquivo: pod-initcontainer.yml a seguir:
+```yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: httpd-init
+  labels:
+    app: httpd-init
+spec:
+  initContainers:
+  - image: hectorvido/git
+    name: cloner
+    command: ["git", "clone", "https://github.com/4linux/4542-site", "/usr/local/apache2/htdocs"]
+    volumeMounts:
+    - mountPath: /usr/local/apache2/htdocs
+      name: html
+  - image: busybox
+    name: cleaner
+    command: ["rm", "-rf", "/usr/local/apache2/htdocs/.git"]
+    volumeMounts:
+    - mountPath: /usr/local/apache2/htdocs
+      name: html
+  containers:
+  - image: httpd:alpine
+    name: httpd
+    volumeMounts:
+    - mountPath: /usr/local/apache2/htdocs
+      name: html
+  volumes:
+  - name: html
+    emptyDir: {}
+```
+
+Neste caso antes de "ativar" o POD com a aplicação é criado um container que irá fazer o clone de um site e adicionar a um volume dentro do POD.
+
+O volume criado é do tipo **emptyDir**, sendo um volume não persistente. Neste caso seu ciclo de vida é conforme o vida do POD.
+
 ---
