@@ -491,4 +491,113 @@ curl kube.192-168-99-100.nip.io
 ```
 Ou Acessar plelo Browser: `http://kube.192-168-99-100.nip.io`
 
+ConfigMap
+---------
+É possivel fazer com o Kubernetes consiga gerenciar os arquivos de configuração da sua aplicação.
+
+Como vamos fazer de inicio apenas um exemplo de como ficaria a configuração de um Lighttpd.
+Vamos criar o arquivo de configurão HTTPD.conf:
+```txt
+server.modules = (
+      "mod_access",
+      "mod_accesslog"
+  )
+  include "mime-types.conf"
+  server.username      = "lighttpd"
+  server.groupname     = "lighttpd"
+  server.document-root = "/var/www/localhost/htdocs"
+  server.pid-file      = "/run/lighttpd.pid"
+  server.errorlog      = "/var/log/lighttpd/error.log"
+  accesslog.filename   = "/var/log/lighttpd/access.log"
+  server.indexfiles    = ("index.html", "index.sh")
+  static-file.exclude-extensions = (".cgi", ".sh")
+  server.modules += ("mod_cgi")
+  cgi.assign = (
+      ".sh" => "/bin/sh",
+  )
+```
+* Criar o CONFIGMAP
+```yml
+kubectl create configmap lighttpd --from-file=lighttpd.conf
+```
+
+Com isso, podemos criar um POD que consiga utilizar esse ConfigMap
+* Criando POD com ConfigMap
+```yml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod
+  labels:
+    name: test
+spec:
+  containers:
+  - name: container
+    image: alpine
+    stdin: true
+    tty: true
+    volumeMounts:
+    - name: config-volume
+      mountPath: /etc/lighttpd/
+  volumes:
+  - name: config-volume
+    configMap:
+      name: lighttpd
+```
+Nesse arquivos estamos passando algumas opções novas:
+* **stdin**: Quando o contairner tem necessidade de alocar buffer na saida padrão.
+* **tty**: Permite a utilização de um terminal
+* **volumeMounts**: Inicia a configuração de um volume no container
+  - **name**: Nome do volume
+  - **mountPath**: diretório mapeado pelo volume.
+* **volumes**: inicia a configuração de como o volume será utilizado
+  - **name**: Nome do volume criado no container
+  - **configMap**: Inicia a configuração para usar o configMap como conteúdo do volume.
+    - **name**: Nome do configmap configurado
+
+Dessa forma é possivel identificar que a configuração realizada está dentro do container criado junto ao Pod.
+* Validando Arquivo:
+```bash
+kubectl exec -ti pod -- cat /etc/lighttpd/lighttpd.conf
+```
+
+Environments
+-------------
+Assim como no Docker, pode ser necessário a utilização de Environments, que são váriaveis globais no ambiente para realizar configuração de uma determinada aplicação.
+
+Com isso, vamos configurar um deployment de MySQL para exemplificar a configuração dos Environments.
+
+```yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.6
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: r00t4linux
+        - name: MYSQL_USER
+          value: 4linux
+        - name: MYSQL_PASSWORD
+          value: 4linux
+```
+Lembrando, geralmente no projeto (DockerHub ou GitHub) da Imagem utilizada como base para criação do container contém as instruções de Environments que são validos.
+
+Dentro do arquivo a novidade é o **env** que está dentro do template para criação do POD.
+Nesse caso foi necessário apenas informar o nome do Environments com a opção **name** e o seu valor com a opção **value**
+
 ---
