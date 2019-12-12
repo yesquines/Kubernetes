@@ -21,7 +21,7 @@ Exercicio
      - **REDIS_SERVER='redis'**
      - **REDIS_PORT='6379'**
      - **REDIS_PASSWORD='4linux'**
-  - Porta no Containes: **5000**
+   - Porta no Containes: **5000**
 4. Criar um Service com NodePort para o PERL
    - O Service tem que direcionar o trafego para o Deploy da **aplicação em Perl**.
    - Nome: **perl**
