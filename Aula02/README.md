@@ -417,30 +417,29 @@ Para podermos enxergar isso minimamente, vamos tentar criar um pod simples nesse
   ```
 * Permitir Agendamento de PODs nas máquinas Masters
   Com isso, para que os PODs possam ser criados nesse ambiente há duas opções:
-    - Retirar o Taint dos Masters
-    - Ou criar, em cada Pod, Tolerants para o Taint dos Masters
+  - Retirar o Taint dos Masters
+  - Ou criar, em cada Pod, Tolerants para o Taint dos Masters
   No nosso caso a melhor opção será fazer a retirada do Taint no Master.
   O comando **kubectl taint** permite que façamos a adição ou exclusão de Taint.
-  - Sintaxe para adicionar um Taint
-    ```bash
-    kubecl taint node NOME_NODE chave=valor:efeito
-    ```
-    Os efeitos possiveis são:
+* Sintaxe para adicionar um Taint
+  ```bash
+  kubecl taint node NOME_NODE chave=valor:efeito
+  ```
+  Os efeitos possiveis são:
     - **NoSchedule**: Pod não será Agendado no Node
     - **PreferNoSchedule**: Preferencialmente pod não será agendado, porém não é uma marcação obrigatória o sistema ainda tentará fazer o agendamento.
     - **NoExecute**: Evacua o POD do Node caso ele não tolere o Taint.
-  - Excluindo o TAINT dos Masters
-    Para excluir um Taint é necessário apenas a utilização de um **traço(-)**
- no final da sentença de chave=valor:efeito.
-    Para que a exclusão do Taint alcançasse todos os nodes utilizamos a opção **--all**.
-    ```bash
-    kubectl taint node --all node-role.kubernetes.io/master-
-    ```
-    Nesse momento o POD já pode ser agendado em alguma das máquinas.
-    ```bash
-    kubectl get pod
-    ```
-    Agora o POD já está **running** em nosso ambiente.
+* Excluindo o TAINT dos Masters
+  Para excluir um Taint é necessário apenas a utilização de um **traço(-)** no final da sentença de chave=valor:efeito.
+  Para que a exclusão do Taint alcançasse todos os nodes utilizamos a opção **--all**.
+  ```bash
+  kubectl taint node --all node-role.kubernetes.io/master-
+  ```
+  Nesse momento o POD já pode ser agendado em alguma das máquinas.
+  ```bash
+  kubectl get pod
+  ```
+  Agora o POD já está **running** em nosso ambiente.
 
 Manipulação de Tokens
 ---------------------
@@ -471,10 +470,9 @@ Como o ETCD armazena todas as informações do cluster. É interessante executar
 O ETCD tem um binário chamado **etcdctl** que permite fazer o acesso externo ao ETCD e gerar o seu backup.
 
 * Baixando o Binário do ETCD
-  Para baixar o binário é necessário acessar o Projeto do ETCD no GitHub:
-  https://github.com/etcd-io/etcd
-  Acessar o Menu **Releases** e Baixar o arquivo etcd-VERSÃO-linux-amd64.tar.gz  
-  Por exemplo:
+  Para baixar o binário é necessário acessar o Projeto do ETCD no GitHub: https://github.com/etcd-io/etcd
+  Acessar o Menu **Releases** e Baixar o arquivo etcd-VERSÃO-linux-amd64.tar.gz
+  Por exemplo:  
   ```bash
   wget https://github.com/etcd-io/etcd/releases/download/v3.3.18/etcd-v3.3.18-linux-amd64.tar.gz
   ```
