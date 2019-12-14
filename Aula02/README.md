@@ -277,15 +277,6 @@ kubeadm join 200.100.50.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
     --discovery-token-ca-cert-hash sha256:4569901991fc020319419c4d6da4bcfba34fcfbdaca964504aca88efc38c0a28
 ```
 Dessa saida iremos salvar o `kubeadm join` do Master e executa nos **master2** e **master3**
-  * Configuranado o Arquivo de Comunicação.
-    Neste arquivo é possivel identificar que seu conteúdo e baseado em Endereços e no Certificado CA do Usuário p/ Autenticação no ambiente.
-    ```bash
-    bash <<EOF
-    mkdir -p $HOME/.kube
-    cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-    chown $(id -u):$(id -g) $HOME/.kube/config
-    EOF
-    ```
   * Realizando Join dos Masters (control-plane)
     - master2
     ```bash
@@ -301,7 +292,15 @@ Dessa saida iremos salvar o `kubeadm join` do Master e executa nos **master2** e
     ```
     > Este é apenas um exemplo já que os valores de chaves serão diferentes no seu ambiente
     > **OBS**: A utilização da flag _--apiserver-advertise-address=_ é devido a utilização de mais de uma interface de rede no ambiente do Vagrant.
-
+  * Configurando o Arquivo de Comunicação **(Todos os Masters)**.
+    Neste arquivo é possivel identificar que seu conteúdo e baseado em Endereços e no Certificado CA do Usuário p/ Autenticação no ambiente.
+    ```bash
+    bash <<EOF
+    mkdir -p $HOME/.kube
+    cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    chown $(id -u):$(id -g) $HOME/.kube/config
+    EOF
+    ```
   * Testando Configuração - Visualizando configurações do ambiente.
     ```bash
     kubeadm config view
@@ -418,8 +417,8 @@ Para podermos enxergar isso minimamente, vamos tentar criar um pod simples nesse
   ```
 * Permitir Agendamento de PODs nas máquinas Masters
   Com isso, para que os PODs possam ser criados nesse ambiente há duas opções:
-  - Retirar o Taint dos Masters
-  - Ou criar, em cada Pod, Tolerants para o Taint dos Masters
+    - Retirar o Taint dos Masters
+    - Ou criar, em cada Pod, Tolerants para o Taint dos Masters
   No nosso caso a melhor opção será fazer a retirada do Taint no Master.
   O comando **kubectl taint** permite que façamos a adição ou exclusão de Taint.
   - Sintaxe para adicionar um Taint
@@ -474,7 +473,7 @@ O ETCD tem um binário chamado **etcdctl** que permite fazer o acesso externo ao
 * Baixando o Binário do ETCD
   Para baixar o binário é necessário acessar o Projeto do ETCD no GitHub:
   https://github.com/etcd-io/etcd
-  Acessar o Menu **Releases** e Baixar o arquivo etcd-VERSÃO-linux-amd64.tar.gz
+  Acessar o Menu **Releases** e Baixar o arquivo etcd-VERSÃO-linux-amd64.tar.gz  
   Por exemplo:
   ```bash
   wget https://github.com/etcd-io/etcd/releases/download/v3.3.18/etcd-v3.3.18-linux-amd64.tar.gz
