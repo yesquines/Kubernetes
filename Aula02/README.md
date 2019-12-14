@@ -40,7 +40,7 @@ Fora isso, também é possivel configurar uma forma de **Provision** que permite
 > Projeto Vagrant: https://www.vagrantup.com/
 > Instalação do Vagrant: https://www.vagrantup.com/docs/installation/
 
-Para podemos ver o Vagrantfile que será utilizado neste curso basta clicar aqui: [Vagrantfile](../Vagranfile)
+Para podemos ver o Vagrantfile que será utilizado neste curso basta clicar aqui: [Vagrantfile](../Vagrantfile)
 
 Para realizar a criação do ambiente, vamos criar um pasta e adicionar neste diretório o Vagrantfile:
 ```bash
