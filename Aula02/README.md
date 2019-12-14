@@ -89,7 +89,7 @@ Instalação Manual
 Com as máquinas prontas é possivel seguir os passos criação do Ambiente Kubernetes multi-master:
 
 #### Configuração dos MASTERS
-As configurações de 1 a 6 serão realizadas nas 3 máquinas masters (master1, master2 e master3)
+As configurações de 1 a 6 serão realizadas nas 3 máquinas masters **(master1, master2 e master3)**
 
 1. **Instalando o Docker**
   ```bash
