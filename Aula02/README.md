@@ -197,14 +197,15 @@ Essa configuração é necessária pois no Ambiente criado pelo Vagrant há duas
     server k8s-master-2 200.100.50.120:6443 check fall 3 rise 2
     EOF
     ```
-    - Reinicio do Serviço
+  - Reinicio do Serviço
     ```bash
     systemctl restart haproxy
     ```
 
 8. **Criando Arquivo de Configuração do Kubernetes**
   O **Master1** terá a responsabilidade de criar a configuração inicial com os certificados de acesso.
-Nesse ponto o Master1 irá popular o etcd para que ele sirva de base para os outros masters.
+
+  Nesse ponto o Master1 irá popular o etcd para que ele sirva de base para os outros masters.
 
   Para que seja possivel iniciar o cluster, precisavamos usar o comando **kubeadm** e para isso devemos criar um arquivo de configuração
 
@@ -239,14 +240,14 @@ Após isso podemos de fato iniciar o cluster utilizando o arquivo de configuraç
 ```bash
 kubeadm init --config /root/kubeadm-config.yml --upload-certs
 ```
+> **NÃO EXECUTAR O COMANDO ABAIXO**
 > **A titulo de curiosidade**, caso tivessimos apenas um Master seria necessário executar apenas o comando abaixo:
 ```bash
 kubeadm init --apiserver-advertise-address=200.100.50.100 --pod-network-cidr=200.100.50.0/24
 ```
-> NÃO IREMOS EXECUTAR ESSE COMANDO
 
-Após a inicilização do Cluster, seremos instruidos em relação a utilização arquivo de comunicação com o Kube Control e o Cluster
-E também de como realizar o ingresso de outros Masters e outros Nodes no ambiente.
+Após a inicialização do Cluster, seremos instruidos em relação a utilização arquivo de comunicação com o Kube Control e o Cluster e, também, de como realizar o ingresso de outros Masters e outros Nodes no ambiente.
+
 Ex:
 ```
 Your Kubernetes control-plane has initialized successfully!
@@ -290,8 +291,8 @@ Dessa saida iremos salvar o `kubeadm join` do Master e executa nos **master2** e
     --discovery-token-ca-cert-hash sha256:4569901991fc020319419c4d6da4bcfba34fcfbdaca964504aca88efc38c0a28 \
     --control-plane --certificate-key f3d6c4d4a0ec008e4846b7942b5a21d27cb86d6661fb1cb26f2f9f341ac46f47 --apiserver-advertise-address=200.100.50.120
     ```
-    > Este é apenas um exemplo já que os valores de chaves serão diferentes no seu ambiente
-    > **OBS**: A utilização da flag _--apiserver-advertise-address=_ é devido a utilização de mais de uma interface de rede no ambiente do Vagrant.
+    > **OBS¹**: Este é apenas um exemplo já que os valores de chaves serão diferentes no seu ambiente
+    > **OBS²**: A utilização da flag _--apiserver-advertise-address=_ é devido a utilização de mais de uma interface de rede no ambiente do Vagrant.
   * Configurando o Arquivo de Comunicação **(Todos os Masters)**.
     Neste arquivo é possivel identificar que seu conteúdo e baseado em Endereços e no Certificado CA do Usuário p/ Autenticação no ambiente.
     ```bash
@@ -472,7 +473,7 @@ O ETCD tem um binário chamado **etcdctl** que permite fazer o acesso externo ao
 * Baixando o Binário do ETCD
   Para baixar o binário é necessário acessar o Projeto do ETCD no GitHub: https://github.com/etcd-io/etcd
   Acessar o Menu **Releases** e Baixar o arquivo etcd-VERSÃO-linux-amd64.tar.gz
-  Por exemplo:  
+  Por exemplo:
   ```bash
   wget https://github.com/etcd-io/etcd/releases/download/v3.3.18/etcd-v3.3.18-linux-amd64.tar.gz
   ```
