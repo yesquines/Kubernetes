@@ -37,7 +37,7 @@ Por padrão, vamos utilizar o Virtualbox como provider, porém o Vagrant permite
 
 Fora isso, também é possivel configurar uma forma de **Provision** que permite realizar configurações enquanto a máquina está sendo criada. Neste caso o Vagrant aceita, por exemplo, a utilização de Ansible, Shell, Puppet, entre outros.
 
-> Projeto Vagrant: https://www.vagrantup.com/  
+> Projeto Vagrant: https://www.vagrantup.com/
 > Instalação do Vagrant: https://www.vagrantup.com/docs/installation/
 
 Para podemos ver o Vagrantfile que será utilizado neste curso basta clicar aqui: [Vagrantfile](../Vagrantfile)
@@ -46,7 +46,7 @@ Para realizar a criação do ambiente, vamos criar um pasta e adicionar neste di
 ```bash
 mkdir k8s-541/
 cd k8s-541/
-wget link_vagrantfile
+wget https://raw.githubusercontent.com/yesquines/Kubernetes/master/Vagrantfile
 ```
 
 Com isso, de dentro do dirtório, podemos iniciar a criação das máquinas com o seguinte comando:
