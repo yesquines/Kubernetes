@@ -16,11 +16,11 @@ Porém para fazer a instalação do Ambiente Kubernetes teremos que seguir os se
 2. Binários do K8S (kudeadm, kubectl, kubelet);
 3. Desativar Swap;
 4. Configurar o IPTables em Modo de Compatibilidade;
-   - A partir do Debian 10 e CentOS 8 o IPTables foi alterado para **FSTable**;
-5. Configurar Driver do CGroup
+   - A partir do Debian 10 e CentOS 8 o IPTables foi alterado para **Nftable**;
+5. Configurar Driver do CGroup;
 6. Configurar o Kubelet;
-7. Configurar o LoadBalancer entre as máquinas Masters.
-8. Criar o arquivo de Configuração Principal;
+7. Configurar o LoadBalancer entre as máquinas Masters;
+8. Criar o arquivo de Configuração Principal.
 
 
 Criando Infraestrutura
