@@ -376,7 +376,8 @@ Entendido como é o funcionamento, podemos iniciar os procedimentos:
   kubectl exec -ti pod-storageclass -- df -Th
   ```
 
-#### Ingress com TLS
+Ingress com TLS
+---------------
 Na [Aula01](../Aula01) criamos um Ingress para acessar uma aplicação na porta 80. Neste momento vamos utilizar o Ingress para o acesso na porta 443.
 
 Como estamos trabalhando com o Cluster, vamos ter que fazer a instalação do NGINX Ingress Controller para poder usufruir dessa função no nosso ambiente.
@@ -500,7 +501,8 @@ Como estamos trabalhando com o Cluster, vamos ter que fazer a instalação do NG
   ```
   ou Acessando diretamente no Browser
 
-### Secrets  
+Secrets 
+-------
 É possivel permitir que o Kubernetes consiga fazer a gerencia de alguns dados sensiveis como senhas, tokens e etc. Essa gerencia é realizada manipulando **secrets**.  
 
 Os secretes armazenam essa informações com o intuito de realmente diminuir o vazamento dos dados sensiveis.
