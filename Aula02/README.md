@@ -429,14 +429,13 @@ No nosso caso a melhor opção será fazer a retirada do Taint no Master.
 O comando **kubectl taint** permite que façamos a adição ou exclusão de Taint. 
 
 * Sintaxe para adicionar um Taint
-```bash
-kubecl taint node NOME_NODE chave=valor:efeito
-```
-Os efeitos possiveis são:
+   ```bash
+   kubecl taint node NOME_NODE chave=valor:efeito
+   ```
+   Os efeitos possiveis são:
    - **NoSchedule**: Pod não será Agendado no Node
    - **PreferNoSchedule**: Preferencialmente pod não será agendado, porém não é uma marcação obrigatória o sistema ainda tentará fazer o agendamento.
-   - **NoExecute**: Evacua o POD do Node caso ele não tolere o Taint.
-
+   - **NoExecute**: Evacua o POD do Node caso ele não tolere o Taint.  
 
 * Excluindo o TAINT dos Masters  
 Para excluir um Taint é necessário apenas a utilização de um **traço(-)** no final da sentença de chave=valor:efeito.  
