@@ -54,7 +54,7 @@ Volumes do tipo emptyDir não são persistentes já sua inicialização é vazia
   ```bash
   kubectl create -f pod-emptydir.yml
   ```
-* _Verificando volume no Pod_
+* _Verificando volume no Pod_  
   Para validar a criação no volume dentro do POD podemos executar `dh -Th` dentro do container da seguinte forma:
   ```bash
   kubectl exec -ti pod-emptydir -- df -Th
@@ -75,7 +75,7 @@ Os tipos de hostPath aceitos são os seguintes:
 
 Tipo  | Ambiente
 ----- | ---------
-  | O tipo "vario" é o padrão e nele não é feita nenhuma verificação.
+.     | O tipo "vazio" é o padrão e nele não é feita nenhuma verificação.
 DirectoryOrCreate  |  Verifica se o Diretório existe, caso contrario o cria.
 Directory  | Diretório deve existir no Node.
 FileOrCreate | Verifica se o arquivo existe, caso contrario o cria.
@@ -145,7 +145,7 @@ Sendo assim, devemos seguir os seguintes passos no nosso laboratório:
 
 Então vamos iniciar.
 
-1. **Implementar NFS**
+1. **Implementar NFS**  
   Vamos acessar a máquina **balancer-storage** e instalar os seguintes pacotes do NFS:
   ```bash
   apt-get install -y nfs-kernel-server nfs-common
@@ -166,12 +166,12 @@ Então vamos iniciar.
   systemctl restart nfs-kernel-server
   exportsfs
   ```
-  Por fim, é necessário que em cada máquina seja instalado o **nfs-common**
+  Por fim, é necessário que em cada máquina seja instalado o **nfs-common**  
   - master1 - master2 - master3
     ```bash
     apt-get install -y nfs-common
     ```
-2. **Configurando PV**
+2. **Configurando PV**  
   Podemos, então, criar o arquivo **pv.yml**:
   ```yml
   apiVersion: v1
@@ -187,7 +187,7 @@ Então vamos iniciar.
       server: 200.100.50.200
       path: '/srv/v1'
   ```
-  Deste arquivo devemos destacar as opção após o **spec**:
+  Deste arquivo devemos destacar as opção após o **spec**:  
   - **capacity**: Permite definir o tamanho de capacidade do volume
     - **storage**: Especificação do tamanho. Valor é apenas informativo, já que dependendo da Solicitação o Storage prove além do informado.
   - **accessModes**: Configuração do permissionamento de leitura e escrita do volume.
@@ -201,7 +201,7 @@ Então vamos iniciar.
   kubectl create -f pv.yml
   kubectl get persistentvolume
   ```
-3. **Configurando PVC**
+3. **Configurando PVC**  
   Agora vamos criar o arquivo **pvc.yml**:
   ```yml
   apiVersion: v1
@@ -215,13 +215,13 @@ Então vamos iniciar.
      requests:
        storage: 256Mi
   ```
-  Nesse caso, podemos ver que o PVC irá se responsabilizar pela requisição do volume, podendo definir o seu modo de acesso (accessModes) e o tamanho necessário (resource → requests → storage)
+  Nesse caso, podemos ver que o PVC irá se responsabilizar pela requisição do volume, podendo definir o seu modo de acesso (accessModes) e o tamanho necessário (resource → requests → storage)  
   Criando e validando a criação do PVC.
   ```bash
   kubectl create -f pvc.yml
   kubectl get persistentvolumeclaim
   ```
-4. **Deploy com VolumePersistent**
+4. **Deploy com VolumePersistent**  
   Vamos definir o arquivo **deploy-volume.yml** com o seguinte conteúdo:
   ```yml
   apiVersion: apps/v1
@@ -261,7 +261,7 @@ Então vamos iniciar.
     kubectl get pv
     kubectl get pvc
     ```
-    É possivel ver que agora o Status do PV e do PVC é _Claim_ ou seja, ele foi requirido e associado ao Deploy com sucesso.
+    É possivel ver que agora o Status do PV e do PVC é _Claim_ ou seja, ele foi requirido e associado ao Deploy com sucesso.  
   - Validando Volume no Deploy
     ```bash
     kubectl exec -ti deploy-volume-<HASH_POD1> -- dh -Th
@@ -284,7 +284,7 @@ o Fluxo do StorageClass pode ser representado na seguinte imagem:
 
 Entendido como é o funcionamento, podemos iniciar os procedimentos:
 
-* Criando StorageClass
+* Criando StorageClass  
   Vamos criar o arquivo **storageclass.yml** para criar o StorageClass da seguinte maneira:
   ```yml
   apiVersion: storage.k8s.io/v1
@@ -300,7 +300,7 @@ Entendido como é o funcionamento, podemos iniciar os procedimentos:
   kubectl create -f storageclass.yml
   kubectl get storageclass
   ```
-* Criando PV e PVC
+* Criando PV e PVC  
   Caso estivesse configuranado em Cloud, só iriamos precisar configurar o PVC, ou seja a requisição de volume por parte do Cliente.
 
   Como estamos simulando o funcionamento do StorageClass, vamos fazer PV que responda as requisições para o StorageClass.
@@ -344,8 +344,8 @@ Entendido como é o funcionamento, podemos iniciar os procedimentos:
   kubectl create -f pvc-storageclass.yml
   kubectl get pvc
   ```
-  Repare que o PVC irá ficar **PENDING**, pois definimos que enquanto algum objeto não solicitar o recurso o volume não será criado.
-* Criando POD com StorageClass
+  Repare que o PVC irá ficar **PENDING**, pois definimos que enquanto algum objeto não solicitar o recurso o volume não será criado.  
+* Criando POD com StorageClass  
   Vamos agora criar o Pod que irá ter o seu volume de forma dinamica, editando o arquivo **pod-sc.yml**
   ```yml
   apiVersion: v1
@@ -381,8 +381,8 @@ Na [Aula01](../Aula01) criamos um Ingress para acessar uma aplicação na porta 
 
 Como estamos trabalhando com o Cluster, vamos ter que fazer a instalação do NGINX Ingress Controller para poder usufruir dessa função no nosso ambiente.
 
-* **Instalação do NGINX Ingress Controller**
-  Projeto: https://github.com/nginxinc/kubernetes-ingress
+* **Instalação do NGINX Ingress Controller**  
+  Projeto: https://github.com/nginxinc/kubernetes-ingress  
 
   Inicialmente vamos precisar clonar o repositório:
   ```bash
@@ -405,8 +405,8 @@ Como estamos trabalhando com o Cluster, vamos ter que fazer a instalação do NG
   ```
   kubectl get pod -n nginx-ingress -o wide
   ```
-* **Utilização do Ingress com TLS**
-  Para utilizar o Ingress com TLS é necessário criar um par de certificados.
+* **Utilização do Ingress com TLS**  
+  Para utilizar o Ingress com TLS é necessário criar um par de certificados.  
 
   Utilizaremos certificados auto-assinados usando o openssl para fazer a criação:
   ```bash
@@ -419,8 +419,8 @@ Como estamos trabalhando com o Cluster, vamos ter que fazer a instalação do NG
   ```bash
   kubectl get secret
   ```
-  Com isso já é possivel criar um aplicação para responder na porta 443.
-  Utilizaremos o mesmo arquivo da Aula01 - **deploy-nginx.yml** adicionando o Service dentro do mesmo arquivo:
+  Com isso já é possivel criar um aplicação para responder na porta 443.  
+  Utilizaremos o mesmo arquivo da Aula01 - **deploy-nginx.yml** adicionando o Service dentro do mesmo arquivo:  
   ```yml
   apiVersion: apps/v1
   kind: Deployment
@@ -500,17 +500,17 @@ Como estamos trabalhando com o Cluster, vamos ter que fazer a instalação do NG
   ```
   ou Acessando diretamente no Browser
 
-### Secrets
-É possivel permitir que o Kubernetes consiga fazer a gerencia de alguns dados sensiveis como senhas, tokens e etc. Essa gerencia é realizada manipulando **secrets**.
+### Secrets  
+É possivel permitir que o Kubernetes consiga fazer a gerencia de alguns dados sensiveis como senhas, tokens e etc. Essa gerencia é realizada manipulando **secrets**.  
 
 Os secretes armazenam essa informações com o intuito de realmente diminuir o vazamento dos dados sensiveis.
 
 Os dados que iremos tratar serão codificados em **base 64**, que é o formato aceito pelo Kubernetes.
 
-Dessa forma, vamos aos testes:
-* Criando Dados com openssl e base64
-  É possivel utilizar tanto o comando **openssl** quanto o **base64** para podermos gerar
-  Vamos gerar um base64 para a senha '4linux':
+Dessa forma, vamos aos testes:  
+* Criando Dados com openssl e base64  
+  É possivel utilizar tanto o comando **openssl** quanto o **base64** para podermos gerar  
+  Vamos gerar um base64 para a senha '4linux':  
   ```bash
   echo -n '4linux' | openssl enc -base64
   NGxpbnV4
@@ -537,9 +537,9 @@ Dessa forma, vamos aos testes:
   kubectl create -f secrets.yml
   kubectl get secrets
   ```
-  Com isso é possivel associar esses secrets em uma aplicação.
-* Utilizando Secrets POD MySQL
-  Para exemplificar a utilização se secrets, vamos utilizar o exemplo de do Deploy MySQL (mysql_secret.yml) da [Aula01](../Aula01)
+  Com isso é possivel associar esses secrets em uma aplicação.  
+* Utilizando Secrets POD MySQL  
+  Para exemplificar a utilização se secrets, vamos utilizar o exemplo de do Deploy MySQL (mysql_secret.yml) da [Aula01](../Aula01)  
   ```yml
   apiVersion: apps/v1
   kind: Deployment
@@ -592,10 +592,11 @@ Dentro do Kubernetes é possível criar Tasks para gerenciar alguma aplicação 
 
 De forma geral, podemos entender os Jobs como um Objeto que servirá para realizar uma ação e, se obter sucesso, "morrerá"
 
-Sendo assim, vamos criar um Job que realiza a limpeza do ambiente Docker dentro de um Node:
-* Criando um Job
-  O nosso job irá simplesmente executar o comando `docker system prune -f` dentro do Node.
+Sendo assim, vamos criar um Job que realiza a limpeza do ambiente Docker dentro de um Node:  
+* Criando um Job  
+  O nosso job irá simplesmente executar o comando `docker system prune -f` dentro do Node.  
   Para isso vamos criar o arquivo **job.yml**
+  
   ```yml
   apiVersion: batch/v1
   kind: Job
@@ -624,68 +625,70 @@ Sendo assim, vamos criar um Job que realiza a limpeza do ambiente Docker dentro 
           - "-f"
         restartPolicy: Never
   ```
-  Reparem que o Job utiliza um Template de Pod para poder executar a sua ação.
-  Outro ponto é a criação de um volume hostPath para fazer a associação e manipulação do Socket do Docker. E por fim, neste caso estamos utilizando o **restartPolicy** que determina que esse Job irá rodar apenas uma vez e não irá reiniciar mais.
+  
+  Reparem que o Job utiliza um Template de Pod para poder executar a sua ação.  
+  Outro ponto é a criação de um volume hostPath para fazer a associação e manipulação do Socket do Docker. E por fim, neste caso estamos utilizando o **restartPolicy** que determina que esse Job irá rodar apenas uma vez e não irá reiniciar mais.  
   ```bash
   kubectl create -f job.yml
   kubectl get job
   ```
-  Com o isso o Job deve aparecer com o status de **Completed** e para uma melhor validação podemos ver seus logs para certificar sua tarefa:
+  Com o isso o Job deve aparecer com o status de **Completed** e para uma melhor validação podemos ver seus logs para certificar sua tarefa:  
   ```bash
   kubectl logs clean-system-HASH
   ```
-* Criando um CronJob
-  Depois de criamos o Job podemos melhora-lo e determinar um periodo de tempo que ele será executado.
+* Criando um CronJob  
+  Depois de criamos o Job podemos melhora-lo e determinar um periodo de tempo que ele será executado.  
 
   Com isso temos o conceito de CronJob, que simplesmente agirá como um agendador de tarefas (semelhante ao Cron do Linux)
 
   Com isso vamos criar o **cronjob.yml** para realizar o teste:
+  
   ```yml
   apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: cronjob-clear-system
-spec:
-  schedule: "*/1 * * * *"
-  jobTemplate:
-    spec:
-     template:
-       metadata:
-         name: cronjob-pod
-         labels:
-           is-cron: "true"
-       spec:
-         volumes:
-         - name: docker-sock
-           hostPath:
-             path: /var/run/docker.sock
-             type: Socket
-         containers:
-         - name: clear-container-cron
-           image: hectorvido/docker-cli
-           volumeMounts:
+  kind: CronJob
+  metadata:
+    name: cronjob-clear-system
+  spec:
+    schedule: "*/1 * * * *"
+    jobTemplate:
+      spec:
+       template:
+         metadata:
+           name: cronjob-pod
+           labels:
+             is-cron: "true"
+         spec:
+           volumes:
            - name: docker-sock
-             mountPath: /var/run/docker.sock
-           command:
-           - "docker"
-           - "system"
-           - "prune"
-           - "-f"
-         restartPolicy: OnFailure
-  ```
-  ```bash
-  kubectl create -f cronjob.yml
-  ```
-  Neste caso temos um template de POD, igual no Job, porém antes disso é definido o **schedule** as opções identicas ao do Crontab:
+             hostPath:
+               path: /var/run/docker.sock
+               type: Socket
+           containers:
+           - name: clear-container-cron
+             image: hectorvido/docker-cli
+             volumeMounts:
+             - name: docker-sock
+               mountPath: /var/run/docker.sock
+             command:
+             - "docker"
+             - "system"
+             - "prune"
+             - "-f"
+           restartPolicy: OnFailure
+    ```
+    ```bash
+    kubectl create -f cronjob.yml
+    ```
+    Neste caso temos um template de POD, igual no Job, porém antes disso é definido o **schedule** as opções identicas ao do Crontab:
 
-  ![CronJob](../images/cronjob.png)
+    ![CronJob](../images/cronjob.png)
 
-  Sendo assim, teremos a cada minuto uma limpeza de ambiente.
-  ```bash
-  kubectl get cronjob
-  kubectl get job -l is-cron -o wide
-  kubectl delete job -l is-cron
-  ```
-  Devido a label que criamos **is-cron** fica fácil manipular o CronJob para que os POD de limpeza não atrapalhem o ambiente.
+    Sendo assim, teremos a cada minuto uma limpeza de ambiente.
+    ```bash
+    kubectl get cronjob
+    kubectl get job -l is-cron -o wide
+    kubectl delete job -l is-cron
+    ```
+    Devido a label que criamos **is-cron** fica fácil manipular o CronJob para que os POD de limpeza não atrapalhem o ambiente.
 
 ---
