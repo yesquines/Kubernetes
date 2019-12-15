@@ -147,14 +147,14 @@ Com isso, para que a gente possa criar um Pod é necessário executar o seguinte
 kubectl run nginx --generator=run-pod/v1 --image nginx:alpine
 ```
 
-Com o POD criado podemos executar comandos para validar o container criado e suas informações.
+Com o POD criado podemos executar comandos para validar o container criado e suas informações.  
 
 * Verificar Criação do POD
   ```bash
   kubectl get pod
   ```
 
-Neste caso o nosso POD tem apenas um container que está utilizando a imagem _nginx:alpine_ e podemos manipular o container com o Kube Control.
+Neste caso o nosso POD tem apenas um container que está utilizando a imagem _nginx:alpine_ e podemos manipular o container com o Kube Control.  
 * Execução de Comandos no Container
   ```bash
   kubectl exec -ti NAME_POD COMMANDS
@@ -168,7 +168,7 @@ Neste caso o nosso POD tem apenas um container que está utilizando a imagem _ng
   ```bash
   kubectl exec -c NAME_CONTAINER -ti NAME_POD COMMAND
   ```
-* Validando Conexão ao NGINX
+* Validando Conexão ao NGINX  
   Devido a utilização do Minikube, temos que executar os comandos no node diretamente por ele.
   Com isso, primeiro vamos identificar qual o IP do container
   ```bash
@@ -178,7 +178,7 @@ Neste caso o nosso POD tem apenas um container que está utilizando a imagem _ng
   ```bash
   minikube ssh curl IP_CONTAINER
   ```
-* Vendo Logs do Container
+* Vendo Logs do Container  
   Após realizar a requisição no serviço web do container, podemos avaliar os logs gerados da seguinte maneira:
   ```bash
   kubectl logs NAME_POD
@@ -207,19 +207,19 @@ O Deploymente é o objeto de alto nível e também pode ser criado via _command 
   ```bash
   kubect get pod
   ```
-  Podemos ver que ele criou apenas um pod.
-  O Deployment faz a gerencia tanto de Pod, Réplicas da aplicação e estratégia de aplicação.
-  É possivel, mesmo criando o deploy via command line, ver como foram descritas as suas configurações:
+  Podemos ver que ele criou apenas um pod.  
+  O Deployment faz a gerencia tanto de Pod, Réplicas da aplicação e estratégia de aplicação.  
+  É possivel, mesmo criando o deploy via command line, ver como foram descritas as suas configurações:  
   ```bash
   kubectl get deployment -o yaml
   ```
-  Com isso, podemos validar que via command line o Deploy é criado com apenas uma réplica.
-  Para que, sem um arquivo yaml, seja possivel aumentar a quantidade de replicas, podemos usar o seguinte comando:
+  Com isso, podemos validar que via command line o Deploy é criado com apenas uma réplica.  
+  Para que, sem um arquivo yaml, seja possivel aumentar a quantidade de replicas, podemos usar o seguinte comando:  
   ```bash
   kubectl scale deploy NAME_DEPLOY --replicas=3
   ```
-  Dessa forma, a aplicação será escalada 3 vezes utilizando o templante de pod baseado na imagem do Apache (httpd:alpine).
-  Podemos confirmar o aumento das replicas da seguinte forma:
+  Dessa forma, a aplicação será escalada 3 vezes utilizando o templante de pod baseado na imagem do Apache (httpd:alpine).  
+  Podemos confirmar o aumento das replicas da seguinte forma:  
   ```bash
   kubectl get deploy
   kubectl get pod
@@ -243,29 +243,29 @@ ExternalName | Mapeia o Serviço para um DNS (Necessário o CoreDNS)
 
 Neste primeiro momento, assim como os outros objetos, vamos realizar as configurações via command line.
 
-* Criando Service para o Deploy
-  Vamos utilizar o Deploy anterior para expor sua porta e podermos acessar a aplicação de dentro do cluster.
+* Criando Service para o Deploy  
+  Vamos utilizar o Deploy anterior para expor sua porta e podermos acessar a aplicação de dentro do cluster.  
   ```bash
   kubectl expose deploy NAME_DEPLOY --port 80
   ```
-  Neste caso, por padrão o service será criado com o tipo _ClusterIP_ e a porta 80 será exposta.
-* Visualizando Service
+  Neste caso, por padrão o service será criado com o tipo _ClusterIP_ e a porta 80 será exposta.  
+* Visualizando Service  
   ```bash
   kubectl get services
   ```
-* Acessando Aplicação.
-  Para que seja possivel acessar a aplicação precisamos novamente do Minikube, já que o ClusterIP só funciona para IP Internos do Cluster.
-  Com o seguinte comando, conseguimos acessar o cluster e executar um requisão no IP criado pelo Service:
+* Acessando Aplicação.  
+  Para que seja possivel acessar a aplicação precisamos novamente do Minikube, já que o ClusterIP só funciona para IP Internos do Cluster.  
+  Com o seguinte comando, conseguimos acessar o cluster e executar um requisão no IP criado pelo Service:  
   ```
   minikube ssh curl IP_SERVICE`
   ```
 
-Dessa forma fazemos o acesso apenas de dentro do Cluster. Para que seja possivel o acesso externo podemos usar o tipo NodePort na criação do service.
-* Deletando Service
+Dessa forma fazemos o acesso apenas de dentro do Cluster. Para que seja possivel o acesso externo podemos usar o tipo NodePort na criação do service.  
+* Deletando Service  
   ```bash
   kubectl delete svc NAME_SERVICE
   ```
-* Alterando Tipo do Service
+* Alterando Tipo do Service  
   ```bash
   kubectl expose deploy NAME_DEPLOY --port 80 --type NodePort
   ```
@@ -275,8 +275,8 @@ Dessa forma fazemos o acesso apenas de dentro do Cluster. Para que seja possivel
   ```
 > Após configurar o Service como NodePort é liberada, para acesso, uma **porta maior que 30000** que será redirecionada para a porta 80 do container no POD.
 
-Com o Service criado agora podemos acessar a aplicação pelo IP da máquina virtual. Para isso temos que saber qual o IP utilizado pelo Minikube
-* Pegando IP do Minikube
+Com o Service criado agora podemos acessar a aplicação pelo IP da máquina virtual. Para isso temos que saber qual o IP utilizado pelo Minikube  
+* Pegando IP do Minikube  
   ```bash
   minikube ip
   ```
@@ -290,10 +290,10 @@ Com o Service criado agora podemos acessar a aplicação pelo IP da máquina vir
 Criando Objetos no Kubernetes - YAML
 -------------------------------------
 
-A forma mais comum de criar objetos no Kubernetes é utilizando arquivos YAMLs.
+A forma mais comum de criar objetos no Kubernetes é utilizando arquivos YAMLs.  
 O YAML está se tornando cada vez mais popular e sendo usado para inúmeras formas de serializar informação com o objetivo de ser amigavel ~~(objetivo nem sempre alcançado)~~
 
-Em suma a maioria dos Objetos tem os seguintes campos como obrigatórios:
+Em suma a maioria dos Objetos tem os seguintes campos como obrigatórios:  
 * **apiVersion**: Versão do Kubernetes API para criar os objetos
 * **kind**: Tipo do Objetivo (Pod, Service, Deployment, etc.)
 * **metadata**: Informações para identificar o objeto no ambiente Kubernetes (nome, namespace, etc.)
@@ -303,7 +303,7 @@ Com isso, nesse primeiro momento, vamos entender a utilização do YAML replican
 
 ### Criando POD com YAML
 
-Vamos criar o arquivo pod-web.yml com o seguinte conteúdo:
+Vamos criar o arquivo pod-web.yml com o seguinte conteúdo:  
 ```yml
 apiVersion: v1
 kind: Pod
@@ -317,21 +317,21 @@ spec:
     - containerPort: 80
 ```
 
-Neste caso além dos campos obrigatórios temos as especificações dos containers que serão criados no POD.
+Neste caso além dos campos obrigatórios temos as especificações dos containers que serão criados no POD.  
 * **containers**: Flag de inicialização da lista de configurações dos containers.
   - **name**: Configuração do nome do container.
   - **image**: Imagem que será utilizada para criar o container.
   - **ports**: Lista de portas para expor no container.
   - **containerPort**: Porta que o container irá expor.
 
-Após a criação do arquivos, podemos implementar o POD da seguinte maneira:
+Após a criação do arquivos, podemos implementar o POD da seguinte maneira:  
 ```bash
 kubectl create -f pod-web.yml
 ```
 
 ### Criando DEPLOYMENT com YAML
 
-Agora que já entendemos como funciona a criação de um YAML para gerenciar objetos no Kubernetes, podemos criar um Deployment. É percepitivel que o conteúdo seguinte arquivo (deploy-nginx.yml), contém um grau de complexidade maior em relação ao POD. Sendo assim, vamos cria-lo:
+Agora que já entendemos como funciona a criação de um YAML para gerenciar objetos no Kubernetes, podemos criar um Deployment. É percepitivel que o conteúdo seguinte arquivo (deploy-nginx.yml), contém um grau de complexidade maior em relação ao POD. Sendo assim, vamos cria-lo:  
 ```yml
 apiVersion: apps/v1
 kind: Deployment
@@ -371,7 +371,7 @@ Antes de entendermos cada campo é necessário ter o entendimento sobre **Labels
 * **_Selector_**:
   - Utilizado para Selecionar Objetos baseados em Labels, ou seja, funciona como um filtro que permite associar e organizar objetos que tenham um Label especifica.
 
-Sendo assim, é possivel observar com mais clareza cada campo do Deployment:
+Sendo assim, é possivel observar com mais clareza cada campo do Deployment:  
 * **labels**: Inicia a informação de metadata para criar uma label para o objeto.
   - **objeto: deploy-nginx**: Label para identificar o Deployment.
 * **replicas**: Quantidade de PODs que serão criados a partir de um template.
@@ -392,7 +392,7 @@ kubectl create -f deploy-nginx.yml
 
 ### Criando SERVICE com YAML
 
-Definida a criação de Deployment, podemos agora gerar um arquivo (service-nginx.yml) de Service.
+Definida a criação de Deployment, podemos agora gerar um arquivo (service-nginx.yml) de Service.  
 ```yml
 apiVersion: v1
 kind: Service
@@ -436,15 +436,15 @@ curl MINIKUBE_IP:32000
 
 INGRESS
 -------
-Mesmo com um service criado, ainda não conseguimos utiliza-lo para que um cliente faça o acesso em uma porta comum como, por exemplo, a porta 80.
-Para resolver esse problema é nessário a configuração de um Ingress.
+Mesmo com um service criado, ainda não conseguimos utiliza-lo para que um cliente faça o acesso em uma porta comum como, por exemplo, a porta 80.  
+Para resolver esse problema é nessário a configuração de um Ingress.  
 
-O Ingress trabalha com um Fluxo do qual ele ficará na frente do ambiente Kubernetes recebendo as requisiçoes e encaminhando para o Serviço distribuir entre os PODS. Conforme a imagem abaixo:
+O Ingress trabalha com um Fluxo do qual ele ficará na frente do ambiente Kubernetes recebendo as requisiçoes e encaminhando para o Serviço distribuir entre os PODS. Conforme a imagem abaixo:  
 
 ![teste](../images/nginx-Ingress.png)
 
-Para criar um Ingress é necessário a instalação de um Ingress Controller.
-Como estamos utilizando o Minikube, só precisamos habilita-lo com o seguinte comando:
+Para criar um Ingress é necessário a instalação de um Ingress Controller.  
+Como estamos utilizando o Minikube, só precisamos habilita-lo com o seguinte comando:  
 ```bash
 minikube addons enable ingress
 ```
@@ -453,8 +453,8 @@ Após isso podemos chegar que foi criado um POD no namespace kube-system do NGIN
 kubectl get pod -n kube-system
 ```
 
-Com o Pod criado é possivel fazer a criação de um ingress para podermos associar a aplicação na porta 80 e com um dominio de acesso.
-Para isso criamos o arquivo ingress.yml:
+Com o Pod criado é possivel fazer a criação de um ingress para podermos associar a aplicação na porta 80 e com um dominio de acesso.  
+Para isso criamos o arquivo ingress.yml:  
 
 ```yml
 apiVersion: extensions/v1beta1
@@ -471,7 +471,7 @@ spec:
          serviceName: service-nginx
          servicePort: 80
 ```
-Em suma os campos necessários para a criação do Ingress são os seguintes:
+Em suma os campos necessários para a criação do Ingress são os seguintes:  
 * **rules**: Inicialização da definição das regras para acesso via o ingress.
   - **host**: Dominio de acesso
   - **http**: Inicializa a definição do caminho para a aplicação e associação a um service.
@@ -485,7 +485,7 @@ Criando o Ingress:
 ```bash
 kubectl create -f ingress.yml
 ```
-Com isso podemos testar acessando o dominio adicionado no ingress:
+Com isso podemos testar acessando o dominio adicionado no ingress:  
 ```bash
 curl kube.192-168-99-100.nip.io
 ```
@@ -493,10 +493,10 @@ Ou Acessar plelo Browser: `http://kube.192-168-99-100.nip.io`
 
 ConfigMap
 ---------
-É possivel fazer com o Kubernetes consiga gerenciar os arquivos de configuração da sua aplicação.
+É possivel fazer com o Kubernetes consiga gerenciar os arquivos de configuração da sua aplicação.  
 
-Como vamos fazer de inicio apenas um exemplo de como ficaria a configuração de um Lighttpd.
-Vamos criar o arquivo de configurão HTTPD.conf:
+Como vamos fazer de inicio apenas um exemplo de como ficaria a configuração de um Lighttpd.  
+Vamos criar o arquivo de configurão HTTPD.conf:  
 ```txt
 server.modules = (
       "mod_access",
@@ -516,13 +516,13 @@ server.modules = (
       ".sh" => "/bin/sh",
   )
 ```
-* Criar o CONFIGMAP
+* Criar o CONFIGMAP  
 ```yml
 kubectl create configmap lighttpd --from-file=lighttpd.conf
 ```
 
-Com isso, podemos criar um POD que consiga utilizar esse ConfigMap
-* Criando POD com ConfigMap
+Com isso, podemos criar um POD que consiga utilizar esse ConfigMap  
+* Criando POD com ConfigMap  
 ```yml
 apiVersion: v1
 kind: Pod
@@ -544,7 +544,7 @@ spec:
     configMap:
       name: lighttpd
 ```
-Nesse arquivos estamos passando algumas opções novas:
+Nesse arquivos estamos passando algumas opções novas:  
 * **stdin**: Quando o contairner tem necessidade de alocar buffer na saida padrão.
 * **tty**: Permite a utilização de um terminal
 * **volumeMounts**: Inicia a configuração de um volume no container
@@ -555,7 +555,7 @@ Nesse arquivos estamos passando algumas opções novas:
   - **configMap**: Inicia a configuração para usar o configMap como conteúdo do volume.
     - **name**: Nome do configmap configurado
 
-Dessa forma é possivel identificar que a configuração realizada está dentro do container criado junto ao Pod.
+Dessa forma é possivel identificar que a configuração realizada está dentro do container criado junto ao Pod.  
 * Validando Arquivo:
 ```bash
 kubectl exec -ti pod -- cat /etc/lighttpd/lighttpd.conf
@@ -563,9 +563,9 @@ kubectl exec -ti pod -- cat /etc/lighttpd/lighttpd.conf
 
 Environments
 -------------
-Assim como no Docker, pode ser necessário a utilização de Environments, que são váriaveis globais no ambiente para realizar configuração de uma determinada aplicação.
+Assim como no Docker, pode ser necessário a utilização de Environments, que são váriaveis globais no ambiente para realizar configuração de uma determinada aplicação.  
 
-Com isso, vamos configurar um deployment de MySQL para exemplificar a configuração dos Environments.
+Com isso, vamos configurar um deployment de MySQL (**deploy-mysql.yml**) para exemplificar a configuração dos Environments.  
 
 ```yml
 apiVersion: apps/v1
@@ -595,16 +595,16 @@ spec:
         - name: MYSQL_PASSWORD
           value: 4linux
 ```
-Lembrando, geralmente no projeto (DockerHub ou GitHub) da Imagem utilizada como base para criação do container contém as instruções de Environments que são validos.
+Lembrando, geralmente no projeto (DockerHub ou GitHub) da Imagem utilizada como base para criação do container contém as instruções de Environments que são validos.  
 
-Dentro do arquivo a novidade é o **env** que está dentro do template para criação do POD.
-Nesse caso foi necessário apenas informar o nome do Environments com a opção **name** e o seu valor com a opção **value**
+Dentro do arquivo a novidade é o **env** que está dentro do template para criação do POD.  
+Nesse caso foi necessário apenas informar o nome do Environments com a opção **name** e o seu valor com a opção **value**  
 
 Init Containers
 ---------------
-Podemos utilizar containers temporarios dentro do POD para executar uma determinada tarefa, do qual é chamado de InitContainers
+Podemos utilizar containers temporarios dentro do POD para executar uma determinada tarefa, do qual é chamado de InitContainers  
 
-No caso, o InitContainers são um configuração dentro de um POD. Que pode ser exemplificado com o arquivo: pod-initcontainer.yml a seguir:
+No caso, o InitContainers são um configuração dentro de um POD. Que pode ser exemplificado com o arquivo: **pod-initcontainer.yml** a seguir:
 ```yml
 apiVersion: v1
 kind: Pod
