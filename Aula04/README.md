@@ -89,6 +89,7 @@ Com isso vamos criar um Deploy, simples e analisar o seu comportamento baseados 
   ```
 
 * Estratégia - Recreate
+
   Para testar a estratégia de Recreate vamos fazer a alteração no deploy-nginx.
 
   Vamos alterar o o arquivo **deploy-nginx.yml** e deixa-lo com o seguinte conteúdo:
