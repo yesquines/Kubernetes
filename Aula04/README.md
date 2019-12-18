@@ -88,7 +88,7 @@ Com isso vamos criar um Deploy, simples e analisar o seu comportamento baseados 
   kubectl describe deploy deploy-nginx
   ```
 
-* Estratégia - Recreate
+* Estratégia - Recreate  
   Para testar a estratégia de Recreate vamos fazer a alteração no deploy-nginx.
 
   Vamos alterar o o arquivo **deploy-nginx.yml** e deixa-lo com o seguinte conteúdo:
@@ -291,7 +291,7 @@ Com isso, vamos realizar a configuração do Metric-Server:
   kubectl top pod
   ```
 
-Após a configuração do Métric-Server, podemos criar um deployment para testar o AutoScale.
+Após a configuração do Métric-Server, podemos criar um deployment para testar o AutoScale.  
 * Criando Deployment - deploy-hpa.yml
   ```yml
   apiVersion: apps/v1
