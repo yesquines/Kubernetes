@@ -458,9 +458,16 @@ Essa é uma prática interessante já que permite limitar o tempo de válidaçã
   kubeadm token list
   ```
 * Criar token com ciclo de vida especifico.
+  - Token Para Node
   ```bash
   kubeadm token create --print-join-command --ttl 30m
   ```
+  - Token para Master
+  ```bash
+  kubeadm token create --print-join-command --certificate-key 1660b45746bbe41210039a643afa3b65e71955525f0b22be7ae0f8233ad71dd5 --ttl 30m
+  ```
+  > Para criar o Token do Master é necessário informar o _certificate-key_
+  
   Após a criação do token temos como retorna exatamente o comando de seria utilizado para ingressar um node em nosso ambiente.
   Por exemplo:
   ```
