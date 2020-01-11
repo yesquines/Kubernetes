@@ -37,7 +37,7 @@ Por padrão, vamos utilizar o Virtualbox como provider, porém o Vagrant permite
 
 Fora isso, também é possivel configurar uma forma de **Provision** que permite realizar configurações enquanto a máquina está sendo criada. Neste caso o Vagrant aceita, por exemplo, a utilização de Ansible, Shell, Puppet, entre outros.
 
-> Projeto Vagrant: https://www.vagrantup.com/  
+> Projeto Vagrant: https://www.vagrantup.com/
 > Instalação do Vagrant: https://www.vagrantup.com/docs/installation/
 
 Para podemos ver o Vagrantfile que será utilizado neste curso basta clicar aqui: [Vagrantfile](../Vagrantfile)
@@ -137,31 +137,30 @@ As configurações de 1 a 6 serão realizadas nas 3 máquinas masters **(master1
   EOF
   systemctl restart docker
   ```
-  > Kubernetes recomenda que configuração com systemd  
+  > Kubernetes recomenda que configuração com systemd
   > https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 
   Podemos validar se as configurações do CGroup para o Docker estão equivalentes a do Kubelet
   ```
-  cat /var/lib/kubelet/kubeadm-flags.env
   docker system info | grep -i cgroup
   ```
 
 6. **Configurando Kubelet**
       - master1
       ```bash
-      echo "KUBELET_EXTRA_ARGS='--node-ip=200.100.50.100'" > /etc/default/kubelet
+      echo "KUBELET_EXTRA_ARGS='--node-ip=172.27.2.100'" > /etc/default/kubelet
       ```
       - master2
       ```bash
-      echo "KUBELET_EXTRA_ARGS='--node-ip=200.100.50.110'" > /etc/default/kubelet
+      echo "KUBELET_EXTRA_ARGS='--node-ip=172.27.2.110'" > /etc/default/kubelet
       ```
       - master3
       ```bash
-      echo "KUBELET_EXTRA_ARGS='--node-ip=200.100.50.120'" > /etc/default/kubelet
+      echo "KUBELET_EXTRA_ARGS='--node-ip=172.27.2.120'" > /etc/default/kubelet
       ```
 Essa configuração é necessária pois no Ambiente criado pelo Vagrant há duas interfaces de rede, dessa formar temos que especificar por qual rede o Kubernetes irá operar.
 
-7. **Configuração do LoadBalancer**  
+7. **Configuração do LoadBalancer**
   A configuração do LoadBalancer será na máquina **balancer-storage**.
   - Instalação do HAProxy
   ```bash
@@ -183,7 +182,7 @@ Essa configuração é necessária pois no Ambiente criado pelo Vagrant há duas
     timeout client 5000ms
 
     frontend kubernetes
-    bind 200.100.50.200:6443
+    bind 172.27.2.200:6443
     option tcplog
     mode tcp
     default_backend kubernetes-master-nodes
@@ -192,18 +191,18 @@ Essa configuração é necessária pois no Ambiente criado pelo Vagrant há duas
     mode tcp
     balance roundrobin
     option tcp-check
-    server k8s-master-0 200.100.50.100:6443 check fall 3 rise 2
-    server k8s-master-1 200.100.50.110:6443 check fall 3 rise 2
-    server k8s-master-2 200.100.50.120:6443 check fall 3 rise 2
+    server k8s-master-0 172.27.2.100:6443 check fall 3 rise 2
+    server k8s-master-1 172.27.2.110:6443 check fall 3 rise 2
+    server k8s-master-2 172.27.2.120:6443 check fall 3 rise 2
     EOF
     ```
   - Reinicio do Serviço
     ```bash
     systemctl restart haproxy
     ```
+    > Documentação: https://www.haproxy.org/download/1.4/doc/configuration.txt
+8. **Criando Arquivo de Configuração do Kubernetes**
 
-8. **Criando Arquivo de Configuração do Kubernetes**  
-  
   O **Master1** terá a responsabilidade de criar a configuração inicial com os certificados de acesso.
 
   Nesse ponto o Master1 irá popular o etcd para que ele sirva de base para os outros masters.
@@ -218,14 +217,14 @@ Essa configuração é necessária pois no Ambiente criado pelo Vagrant há duas
     apiVersion: kubeadm.k8s.io/v1beta2
     kind: ClusterConfiguration
     kubernetesVersion: stable
-    controlPlaneEndpoint: "200.100.50.200:6443"
+    controlPlaneEndpoint: "172.27.2.200:6443"
     networking:
       podSubnet: "10.227.0.0/16"
     ---
     apiVersion: kubeadm.k8s.io/v1beta2
     kind: InitConfiguration
     localAPIEndpoint:
-      advertiseAddress: "200.100.50.100"
+      advertiseAddress: "172.27.2.100"
       bindPort: 6443
     EOF
     ```
@@ -233,18 +232,19 @@ Essa configuração é necessária pois no Ambiente criado pelo Vagrant há duas
 Inicializando o Cluster
 -----------------------
 Neste momento, utilizaremos de fato o kubeadm.
-Podemos já fazer algumas validações como visualizar todas as imagens que são necessárias para ambiente Kubernetes
+Podemos já fazer algumas validações como visualizar todas as imagens que são necessárias para ambiente Kubernetes e já baixa-las
 ```bash
 kubeadm config images list
+kubeadm config images pull
 ```
 Após isso podemos de fato iniciar o cluster utilizando o arquivo de configuração gerado no passo anterior.
 ```bash
 kubeadm init --config /root/kubeadm-config.yml --upload-certs
 ```
-> **NÃO EXECUTAR O COMANDO ABAIXO**  
+> **NÃO EXECUTAR O COMANDO ABAIXO**
 > **A titulo de curiosidade**, caso tivessimos apenas um Master seria necessário executar apenas o comando abaixo:
 ```bash
-kubeadm init --apiserver-advertise-address=200.100.50.100 --pod-network-cidr=200.100.50.0/24
+kubeadm init --apiserver-advertise-address=172.27.2.100 --pod-network-cidr=172.27.2.0/24
 ```
 
 Após a inicialização do Cluster, seremos instruidos em relação a utilização arquivo de comunicação com o Kube Control e o Cluster e, também, de como realizar o ingresso de outros Masters e outros Nodes no ambiente.
@@ -265,7 +265,7 @@ Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
 
 You can now join any number of the control-plane node running the following command on each as root:
 
-  kubeadm join 200.100.50.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
+  kubeadm join 172.27.2.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
     --discovery-token-ca-cert-hash sha256:4569901991fc020319419c4d6da4bcfba34fcfbdaca964504aca88efc38c0a28 \
     --control-plane --certificate-key f3d6c4d4a0ec008e4846b7942b5a21d27cb86d6661fb1cb26f2f9f341ac46f47
 
@@ -275,26 +275,26 @@ As a safeguard, uploaded-certs will be deleted in two hours; If necessary, you c
 
 Then you can join any number of worker nodes by running the following on each as root:
 
-kubeadm join 200.100.50.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
+kubeadm join 172.27.2.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
     --discovery-token-ca-cert-hash sha256:4569901991fc020319419c4d6da4bcfba34fcfbdaca964504aca88efc38c0a28
 ```
 Dessa saida iremos salvar o `kubeadm join` do Master e executa nos **master2** e **master3**
   * Realizando Join dos Masters (control-plane)
     - master2
     ```bash
-      kubeadm join 200.100.50.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
+      kubeadm join 172.27.2.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
     --discovery-token-ca-cert-hash sha256:4569901991fc020319419c4d6da4bcfba34fcfbdaca964504aca88efc38c0a28 \
-    --control-plane --certificate-key f3d6c4d4a0ec008e4846b7942b5a21d27cb86d6661fb1cb26f2f9f341ac46f47 --apiserver-advertise-address=200.100.50.110
+    --control-plane --certificate-key f3d6c4d4a0ec008e4846b7942b5a21d27cb86d6661fb1cb26f2f9f341ac46f47 --apiserver-advertise-address=172.27.2.110
     ```
     - master3
     ```bash
-      kubeadm join 200.100.50.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
+      kubeadm join 172.27.2.200:6443 --token 68pzp7.uqyatju1ycn9pu9u \
     --discovery-token-ca-cert-hash sha256:4569901991fc020319419c4d6da4bcfba34fcfbdaca964504aca88efc38c0a28 \
-    --control-plane --certificate-key f3d6c4d4a0ec008e4846b7942b5a21d27cb86d6661fb1cb26f2f9f341ac46f47 --apiserver-advertise-address=200.100.50.120
+    --control-plane --certificate-key f3d6c4d4a0ec008e4846b7942b5a21d27cb86d6661fb1cb26f2f9f341ac46f47 --apiserver-advertise-address=172.27.2.120
     ```
-    > **OBS¹**: Este é apenas um exemplo já que os valores de chaves serão diferentes no seu ambiente  
+    > **OBS¹**: Este é apenas um exemplo já que os valores de chaves serão diferentes no seu ambiente
     > **OBS²**: A utilização da flag _--apiserver-advertise-address=_ é devido a utilização de mais de uma interface de rede no ambiente do Vagrant.
-  * Configurando o Arquivo de Comunicação **(Todos os Masters)**.  
+  * Configurando o Arquivo de Comunicação **(Todos os Masters)**.
     Neste arquivo é possivel identificar que seu conteúdo e baseado em Endereços e no Certificado CA do Usuário p/ Autenticação no ambiente.
     ```bash
     bash <<EOF
@@ -312,17 +312,34 @@ Dessa saida iremos salvar o `kubeadm join` do Master e executa nos **master2** e
     kubectl get node
     ```
     Neste primeiro momento as máquinas não ficarão **READY** e isso é devido a necessídade da configuração de um controlador de rede para o Kubernetes.
-  > **NÃO EXECUTAR O COMANDO ABAIXO**  
+  > **NÃO EXECUTAR O COMANDO ABAIXO**
   > É possivel, em caso de necessidade, realizar o **Reset** das configurações do master ou nodes com o comando a seguir:
   ```bash
   kubeadm reset -f
   ```
-  
+
+Arquivos e Diretórios do Kubernetes
+-----------------------------------
+Dentro do ambiente do Kubernetes há arquivos e diretório importantes.
+* Arquivos
+  - **/etc/kubernetes/admin.conf**: Permite a gerencia do ambiente Kubernetes
+  - **/etc/kubernetes/{controller-manager,kubelet,scheduler}.conf**: Identificações de cada componente dentro do ambiente.
+  - **/var/lib/kubelet/config.yaml**: Configurações do Kubelet
+  - **/var/lib/kubelet/kubeadm-flags.env**: Flags de inicilização do Kubelet
+    - Para incluir argumentos extras para o Kubelet é usado o arquivo _/etc/default/kubelet_
+* Diretórios
+  - **/etc/kubernetes/manifests/**: Diretórios com YAMLs de configurações dos POD Estáticos.
+  - **/etc/kubernetes/pki/**: Certificados TLS utilizados pelo Kubernetes
+  - **/var/lib/kubelet/pki/**: Certificados TLS utilizados pelo Kubelet
+  - **/var/lib/kubelet/pods/**: Referencia dos PODs
+
+---
+
 Controlador de REDE
 --------------------
 Pelo fato do Kubernetes não tem um plugin de rede padrão precisamos fazer sua instalação para que seja possivel a comunicação dos componentes.
 
-Há inúmeras opções de Plugins de redes que podem ser visualizadas com link abaixo:  
+Há inúmeras opções de Plugins de redes que podem ser visualizadas com link abaixo:
 https://kubernetes.io/docs/concepts/cluster-administration/networking/
 
 ### Projeto Cálico
@@ -357,23 +374,6 @@ Após o Kubernetes provisionar o Cálico já devemos conseguir visualizar todos 
 kubectl get node
 ```
 
----
-
-Arquivos e Diretórios do Kubernetes
------------------------------------
-Dentro do ambiente do Kubernetes há arquivos e diretório importantes.
-* Arquivos
-  - **/etc/kubernetes/admin.conf**: Permite a gerencia do ambiente Kubernetes
-  - **/etc/kubernetes/{controller-manager,kubelet,scheduler}.conf**: Identificações de cada componente dentro do ambiente.
-  - **/var/lib/kubelet/config.yaml**: Configurações do Kubelet
-  - **/var/lib/kubelet/kubeadm-flags.env**: Flags de inicilização do Kubelet
-    - Para incluir argumentos extras para o Kubelet é usado o arquivo _/etc/default/kubelet_
-* Diretórios
-  - **/etc/kubernetes/manifests/**: Diretórios com YAMLs de configurações dos POD Estáticos.
-  - **/etc/kubernetes/pki/**: Certificados TLS utilizados pelo Kubernetes
-  - **/var/lib/kubelet/pki/**: Certificados TLS utilizados pelo Kubelet
-  - **/var/lib/kubelet/pods/**: Referencia dos PODs
-
 Taint e Tolerants
 -----------------
 Para que seja possivel a criação de PODs nos Nodes, o ambiente Kubernetes trabalha com regras de _Taint_ e _Tolerants_.
@@ -404,8 +404,8 @@ Para podermos enxergar isso minimamente, vamos tentar criar um pod simples nesse
   kubectl create -f pod_simples.yml
   kubectl describe pod pod-simples
   ```
-  
-Ao tentar criar o pod, podemos ver que ele não conseguiu ser criado, já que nenhum das máquinas de estão como master tem Taint que são tolerados pelos PODs.  
+
+Ao tentar criar o pod, podemos ver que ele não conseguiu ser criado, já que nenhum das máquinas de estão como master tem Taint que são tolerados pelos PODs.
 Evento apresentado:
 ```
 Warning  FailedScheduling  <unknown>  default-scheduler  0/3 nodes are available: 3 node(s) had taints that the pod didn't tolerate.
@@ -421,12 +421,12 @@ Taint do Master1:
 Taints: node-role.kubernetes.io/master:NoSchedule
 ```
 
-* Permitir Agendamento de PODs nas máquinas Masters  
+* Permitir Agendamento de PODs nas máquinas Masters
 Com isso, para que os PODs possam ser criados nesse ambiente há duas opções:
    - Retirar o Taint dos Masters
-   - Ou criar, em cada Pod, Tolerants para o Taint dos Masters  
-No nosso caso a melhor opção será fazer a retirada do Taint no Master.  
-O comando **kubectl taint** permite que façamos a adição ou exclusão de Taint. 
+   - Ou criar, em cada Pod, Tolerants para o Taint dos Masters
+No nosso caso a melhor opção será fazer a retirada do Taint no Master.
+O comando **kubectl taint** permite que façamos a adição ou exclusão de Taint.
 
 * Sintaxe para adicionar um Taint
    ```bash
@@ -435,11 +435,11 @@ O comando **kubectl taint** permite que façamos a adição ou exclusão de Tain
    Os efeitos possiveis são:
    - **NoSchedule**: Pod não será Agendado no Node
    - **PreferNoSchedule**: Preferencialmente pod não será agendado, porém não é uma marcação obrigatória o sistema ainda tentará fazer o agendamento.
-   - **NoExecute**: Evacua o POD do Node caso ele não tolere o Taint.  
+   - **NoExecute**: Evacua o POD do Node caso ele não tolere o Taint.
 
-* Excluindo o TAINT dos Masters  
-Para excluir um Taint é necessário apenas a utilização de um **traço(-)** no final da sentença de chave=valor:efeito.  
-Para que a exclusão do Taint alcançasse todos os nodes utilizamos a opção **--all**.  
+* Excluindo o TAINT dos Masters
+Para excluir um Taint é necessário apenas a utilização de um **traço(-)** no final da sentença de chave=valor:efeito.
+Para que a exclusão do Taint alcançasse todos os nodes utilizamos a opção **--all**.
 ```bash
 kubectl taint node --all node-role.kubernetes.io/master-
 ```
@@ -451,8 +451,8 @@ Agora o POD já está **running** em nosso ambiente.
 
 Manipulação de Tokens
 ---------------------
-Após o Cluster ser iniciado é possivel manipular os tokens para ingresso de nodes no ambiente.  
-Essa é uma prática interessante já que permite limitar o tempo de válidação do token, fazendo com que os token sejam utilizados somento quando há de fato um novo node para ser adicionado.  
+Após o Cluster ser iniciado é possivel manipular os tokens para ingresso de nodes no ambiente.
+Essa é uma prática interessante já que permite limitar o tempo de válidação do token, fazendo com que os token sejam utilizados somento quando há de fato um novo node para ser adicionado.
 * Listar tokens disponiveis:
   ```bash
   kubeadm token list
@@ -461,12 +461,12 @@ Essa é uma prática interessante já que permite limitar o tempo de válidaçã
   ```bash
   kubeadm token create --print-join-command --ttl 30m
   ```
-  Após a criação do token temos como retorna exatamente o comando de seria utilizado para ingressar um node em nosso ambiente.  
-  Por exemplo:  
+  Após a criação do token temos como retorna exatamente o comando de seria utilizado para ingressar um node em nosso ambiente.
+  Por exemplo:
   ```
-  kubeadm join 200.100.50.100:6443 --token oe0dtl.n9v3pbvhha0nv1ty --discovery-token-ca-cert-hash sha256:2b99bb7d43d651a200a84b04996618333d668817b96bf0333e2c34b1bec1bada
+  kubeadm join 172.27.2.100:6443 --token oe0dtl.n9v3pbvhha0nv1ty --discovery-token-ca-cert-hash sha256:2b99bb7d43d651a200a84b04996618333d668817b96bf0333e2c34b1bec1bada
   ```
-  Como a utilização de um node no nosso ambiente pode acarretar em uma extrapolação de recurso, não iremos utiliza-lo em nenhuma máquina.  
+  Como a utilização de um node no nosso ambiente pode acarretar em uma extrapolação de recurso, não iremos utiliza-lo em nenhuma máquina.
 * Remover Tokens
   ```bash
   kubeadm token delete TOKEN
@@ -474,13 +474,13 @@ Essa é uma prática interessante já que permite limitar o tempo de válidaçã
 
 Backup do ETCD
 --------------
-Como o ETCD armazena todas as informações do cluster. É interessante executar os procedimentos de Backup.  
-O ETCD tem um binário chamado **etcdctl** que permite fazer o acesso externo ao ETCD e gerar o seu backup.  
+Como o ETCD armazena todas as informações do cluster. É interessante executar os procedimentos de Backup.
+O ETCD tem um binário chamado **etcdctl** que permite fazer o acesso externo ao ETCD e gerar o seu backup.
 
 * Baixando o Binário do ETCD
-  Para baixar o binário é necessário acessar o Projeto do ETCD no GitHub: https://github.com/etcd-io/etcd  
-  Acessar o Menu **Releases** e Baixar o arquivo etcd-VERSÃO-linux-amd64.tar.gz  
-  Por exemplo:  
+  Para baixar o binário é necessário acessar o Projeto do ETCD no GitHub: https://github.com/etcd-io/etcd
+  Acessar o Menu **Releases** e Baixar o arquivo etcd-VERSÃO-linux-amd64.tar.gz
+  Por exemplo:
   ```bash
   wget https://github.com/etcd-io/etcd/releases/download/v3.3.18/etcd-v3.3.18-linux-amd64.tar.gz
   ```
@@ -499,13 +499,13 @@ E após isso já é possivel executa-lo:
 etcdctl --help
 ETCDCTL_API=3 etcdctl --help
 ```
-Para cada versão do ETCDCTL o binário retorna opções diferentes. Vamos utilizar a ultima versão, no caso, a **versão 3**.  
-Com isso vamos exportar a variavel **ETCDCTL_API** para torna-la global:  
+Para cada versão do ETCDCTL o binário retorna opções diferentes. Vamos utilizar a ultima versão, no caso, a **versão 3**.
+Com isso vamos exportar a variavel **ETCDCTL_API** para torna-la global:
 ```bash
 export ETCDCTL_API=3
 cd /etc/kubernetes/pki/etcd/
 ```
-É necessário acessarmos a pastar _/etc/kubernetes/pki/etcd_ para facilitar a escrita do comando, já que para realizar a autenticação no **etcd** e ter acesso aos dados é necessário utilizar os certificados.  
+É necessário acessarmos a pastar _/etc/kubernetes/pki/etcd_ para facilitar a escrita do comando, já que para realizar a autenticação no **etcd** e ter acesso aos dados é necessário utilizar os certificados.
 * Realizando o Backup
   ```bash
   etcdctl snapshot save --cacert ca.crt --cert server.crt --key server.key /root/etcd.db
@@ -514,8 +514,8 @@ cd /etc/kubernetes/pki/etcd/
   ```bash
   etcdctl snapshot status --cacert ca.crt --cert server.crt --key server.key /root/etcd.db
   ```
-**Não iremos realizar o restore do Backup**, porém se fosse necessário faze-lo é importante estar ciente da necessidade de um procedimento de Backup para o diretório **/etc/kubernetes**.  
-  - Exemplo do Comando de Restore:  
+**Não iremos realizar o restore do Backup**, porém se fosse necessário faze-lo é importante estar ciente da necessidade de um procedimento de Backup para o diretório **/etc/kubernetes**.
+  - Exemplo do Comando de Restore:
   ```bash
   etcdctl snapshot restore --data-dir="/var/lib/etcd/" /root/etcd.db
   ```
