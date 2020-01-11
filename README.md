@@ -1,4 +1,14 @@
-![Kubernetes](../images/kubernetes_logo.png)
+![Kubernetes](images/kubernetes_logo.png)
+
+**Repositório GitHub**
+======================
+Esse repositório tem como intuído ser um guia para o aprendizado de Kubernetes.
+
+A ideia é apresentar os conceitos e propor pequenos laboratórios para que seja possível realizar testes baseado na criação de um Infraestrutura como Código(IaC) com o Vagrant.
+
+> Este é um repositório aberto para Sugestões de Melhorias e Inclusão de nova informações.
+
+
 **Introdução a Kubernetes**
 ===========================
 
@@ -7,7 +17,7 @@ Kubernetes providencia um framework para executar, de forma resiliente, sistemas
 O Kubernetes nasceu de um projeto Open Source criado pelo Google em 2014 chamado Borg que derivou, além do Kubernetes, o Meso e CloudFoundry.
 
 ### Certificação
-![Kubernetes](../images/logo_cka.png)
+![Kubernetes](images/logo_cka.png)
 Kubernetes contém duas certificações:
 * CKA - Certified Kubernetes Administrator
 * CKAD - Certified Kubernetes Application Developer
@@ -35,7 +45,7 @@ Tipos de Deploys
 ----------------
 Para entender a importancia do Kubernetes atualmente no mercado é necessário observar a mudança de visão em relação a entrega de aplicações.
 
-![Tipos de Deploy](../images/deploys.png)
+![Tipos de Deploy](images/deploys.png)
 
 * **Deploy Tradicional**
   - Aplicações em Servidores Fisicos.
@@ -64,7 +74,7 @@ Isolamento de ambiente a nível de processo. Uma aplicação auto-contida criada
     - namespaces: Limite a área de compartilhamento/visualização dos recursos (rede, processos, filesystem, etc)
     - Union filesystem: FileSystem em camadas (já existentes - snapshots) com o conceito de _copy-on-write_, gerando uma camada superficial de escrita
 
-![Container Filesystem](../images/container-filesystems.png)
+![Container Filesystem](images/container-filesystems.png)
 
 **Container Runtime**: São os gerenciadores dos componentes utilizados por um container
 Há inúmeros Containers Runtime como:
@@ -75,7 +85,7 @@ Há inúmeros Containers Runtime como:
 * Entre outros.
 
 Diagrama de Container Runtime - Baseado em Docker
-![Container Runtime](../images/container_runtime.png)
+![Container Runtime](images/container_runtime.png)
 
 ### Caracteristicas do Kubernetes
 Com os conceitos basicos definidos podemos ver
@@ -135,7 +145,7 @@ Para podermos trabalhar com o cluster Kubernetes e necessário entender alguns c
   - Software responsável por gerenciar os containers em execução.
   - Suporta: Docker, Containerd, cri-o, rktlet e outros.
 
-![Componentes do Cluster](../images/components-of-kubernetes.png)
+![Componentes do Cluster](images/components-of-kubernetes.png)
 
 ---
 
@@ -160,7 +170,7 @@ POD
 * Compartilham interface de rede(IP Address Exclusivo) e volumes.
 * Geralmente é gerenciado por um _Deployment_ por isso representa uma unidade do Deployment
 
-![Pods](../images/pods.png)
+![Pods](images/pods.png)
 
 #### Service
 É a Forma de expor a aplicação como um serviço de rede, ou seja, cria um ponto de acesso para um conjunto de pods.
@@ -168,7 +178,7 @@ POD
 * Os Pods do Service são determinados por um _Selector_ (Filtro de Recursos baseado em **LABEL**)
 * Basicamente é um LoadBalancer entre os PODs ativos e filtrados.
 
-![Sevice](../images/service-pod.png)
+![Sevice](images/service-pod.png)
 
 #### Volume
 É um diretório contendo informações acessiveis por um container em um POD.
@@ -197,8 +207,7 @@ Tem como objetivo manter um conjunto de replicas de Pods sendo executado.
 * Especifica a quantidade de replicas.
 * Baseado em um template de Pods, usado para criar novos Jobs.
 
-![Deploy - RS - POD](../images/deploy-rs-pod.png)
-
+![Deploy - RS - POD](images/deploy-rs-pod.png)
 
 StatefulSet
 -----------
