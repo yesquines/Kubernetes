@@ -86,7 +86,8 @@ Há inúmeros Containers Runtime como:
 
 Diagrama de Container Runtime - Baseado em Docker
 ![Container Runtime](images/container_runtime.png)
-
+> OCI: https://www.opencontainers.org/  
+> runC: https://github.com/opencontainers/runc
 ### Caracteristicas do Kubernetes
 Com os conceitos basicos definidos podemos ver
 
