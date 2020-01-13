@@ -89,7 +89,7 @@ Diagrama de Container Runtime - Baseado em Docker
 > OCI: https://www.opencontainers.org/  
 > runC: https://github.com/opencontainers/runc
 ### Caracteristicas do Kubernetes
-Com os conceitos basicos definidos podemos ver
+Com os conceitos basicos definidos, podemos ver quais as principais caracteristicas que o Kubernetes nos proporciona: 
 
 * `Service Discovery e LoadBalancer` - Distribuição do alto tráfego baseado na descoberta de serviços (DNS, IP, Variaveis de Ambiente) até estabilizar a aplicação.
 * `Storage Orchestration` - Orquestração de Storage - Gerenciar a montagens de volumes de armazenamento.
